@@ -1,68 +1,75 @@
-import { createClient } from '@/utils/supabase/server';
+'use client'; // ボタンのクリックなどの動きを出すために必須
 
-export const revalidate = 0;
+import { useState } from 'react';
 
-export default async function Page() {
-  // 【重要】ここで await を入れることで、supabaseクライアントが準備できるのを待ちます
-  const supabase = await createClient();
+export default function Home() {
+  // 画面の「状態（データ）」を管理する変数
+  const [goal, setGoal] = useState("子供にカッコいい背中を見せるために、ベンチプレス100kg達成する！");
+  const [advice, setAdvice] = useState("上のボタンを押して、今日の先生を選んでね！");
+  const [currentCoach, setCurrentCoach] = useState("");
 
-  // データを取得
-  const { data: quotes, error } = await supabase
-    .from('quotes')
-    .select('*');
-
-  if (error || !quotes) {
-    return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <p className="text-red-500 font-bold">データの取得に失敗しました。</p>
-      </div>
-    );
-  }
-
-// 1. 全データから著者（author）を重複なく取り出し、シャッフルして3名選ぶ
-  const selectedAuthors = Array.from(new Set(quotes.map(q => q.author)))
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3);
-
-  // 2. 選ばれた3名それぞれから、ランダムに1つずつ名言を抽出する
-  const displayQuotes = selectedAuthors.map(authorName => {
-    const authorQuotes = quotes.filter(q => q.author === authorName);
-    return authorQuotes[Math.floor(Math.random() * authorQuotes.length)];
-  });
+  // ボタンを押したときの動き
+  const handleCoachClick = (coachType: 'ofuzake' | 'uranai' | 'ijin' | 'sparta', coachName: string) => {
+    setCurrentCoach(coachName);
+    setAdvice(dummyQuotes[coachType]);
+  };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-slate-50">
-      <div className="max-w-2xl w-full space-y-8">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl font-extrabold text-slate-900">偉人からの伝言</h1>
-          <p className="mt-2 text-slate-600">未来を作りたいあなたにとって気づきになる言葉</p>
-        </div>
+    <main className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center p-4">
+      
+      {/* 1. ヘッダー */}
+      <header className="my-6">
+        <h1 className="text-3xl font-extrabold text-amber-500 tracking-wider">MyWhy</h1>
+      </header>
 
-        <div className="grid gap-6">
-          {displayQuotes.map((quote) => (
-            <div 
-              key={quote.id} 
-              className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200"
-            >
-              <p className="text-xl leading-relaxed text-slate-800 font-medium mb-4">
-                「{quote.content}」
-              </p>
-              <p className="text-right text-slate-500 font-bold">
-                — {quote.author}
-              </p>
-            </div>
-          ))}
-        </div>
+      {/* 2. 目標設定エリア */}
+      <section className="w-full max-w-md bg-slate-800 border-2 border-amber-500/30 rounded-2xl p-5 mb-8 shadow-xl text-center">
+        <p className="text-xs text-slate-400 font-bold mb-1">MY GOAL / 目的意識</p>
+        <p className="text-lg font-medium text-amber-100 italic">「{goal}」</p>
+      </section>
 
-        <div className="text-center mt-12">
-          <a 
-            href="/"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-          >
-            別の言葉を仰ぐ
-          </a>
+      {/* 3. 4人の先生ボタンエリア */}
+      <section className="w-full max-w-md mb-8">
+        <p className="text-sm font-bold text-slate-400 mb-3 text-center">今日の相談相手を選ぶ</p>
+        <div className="grid grid-cols-2 gap-3">
+          <button onClick={() => handleCoachClick('ofuzake', '🧚‍♂️ おふざけ先生')} className="p-4 bg-emerald-600 hover:bg-emerald-500 active:scale-95 rounded-xl font-bold transition shadow-lg text-center cursor-pointer">
+            🧚‍♂️ おふざけ
+          </button>
+          <button onClick={() => handleCoachClick('uranai', '🔮 占い好き先生')} className="p-4 bg-purple-600 hover:bg-purple-500 active:scale-95 rounded-xl font-bold transition shadow-lg text-center cursor-pointer">
+            🔮 占い好き
+          </button>
+          <button onClick={() => handleCoachClick('ijin', '🏆 スポーツ偉人先生')} className="p-4 bg-blue-600 hover:bg-blue-500 active:scale-95 rounded-xl font-bold transition shadow-lg text-center cursor-pointer">
+            🏆 スポーツ偉人
+          </button>
+          <button onClick={() => handleCoachClick('sparta', '👹 スパルタ先生')} className="p-4 bg-rose-600 hover:bg-rose-500 active:scale-95 rounded-xl font-bold transition shadow-lg text-center cursor-pointer">
+            👹 スパルタ
+          </button>
         </div>
-      </div>
+      </section>
+
+      {/* 4. アドバイス表示エリア */}
+      <section className="w-full max-w-md bg-slate-800 rounded-2xl p-6 min-h-[150px] flex flex-col justify-between shadow-xl border border-slate-700">
+        <div>
+          {currentCoach && <p className="text-sm font-bold text-amber-400 mb-2">{currentCoach}からの言葉：</p>}
+          <p className="text-base leading-relaxed text-slate-200 whitespace-pre-wrap">{advice}</p>
+        </div>
+        
+        {/* 筋トレ完了ボタン（セリフが出ているときだけ表示） */}
+        {currentCoach && (
+          <button className="mt-6 w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-900 font-extrabold rounded-xl transition shadow-md active:scale-95 cursor-pointer">
+            よし、今日の筋トレ完了！
+          </button>
+        )}
+      </section>
+
     </main>
   );
 }
+
+// 開発用の仮データ（Step 4でSupabaseから取得するように書き換えます）
+const dummyQuotes = {
+  ofuzake: "お疲れサマッシュ！今日サボったらプロテインがただの美味しい大豆粉になっちゃうよ？ジムの床を踏むだけで大金星！",
+  uranai: "今日のあなたのラッキー筋肉は【広背筋】です。北東を向いてラットプルダウンをすると運気が爆上がりする予感！",
+  ijin: "「準備というのは、言い訳を排除すること。」\n――さあ、自分だけの目標のために、今日の1セットを始めよう。",
+  sparta: "言い訳の天才になるな！明日やろうはバカ野郎だ！やるって決めたのは誰だ？今すぐ動け、筋肉が泣いているぞ！"
+};
