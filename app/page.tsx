@@ -19,7 +19,7 @@ export default function Home() {
       
       {/* 1. ヘッダー */}
       <header className="my-6">
-        <h1 className="text-3xl font-extrabold text-amber-500 tracking-wider">MyWhy</h1>
+        <h1 className="text-3xl font-extrabold text-amber-500 tracking-wider">筋トレパートナー</h1>
       </header>
 
       {/* 2. 目標設定エリア */}
