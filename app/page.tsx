@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 export default function Home() {
   // 画面の「状態（データ）」を管理する変数
-  const [goal, setGoal] = useState("基本的な活動を継続して成果を出すために、ベンチプレス100kg達成する！");
+  const [goal, setGoal] = useState("継続は力なり！を体感するために、ベンチプレス100kg達成する！");
   const [advice, setAdvice] = useState("上のボタンを押して、今日の先生を選んでね！");
   const [currentCoach, setCurrentCoach] = useState("");
 
