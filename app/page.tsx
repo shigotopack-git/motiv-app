@@ -4,17 +4,16 @@ import { useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 // 1. Supabaseクライアントの初期化
-// ※環境変数（NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY）は .env.local に設定してください
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// コーチ5名の定義（idをテーブルの coach_type の値と一致させています）
+// コーチ5名の定義（idをご指定のフィールド値 'yuruchara', 'ofuzake', 'uranai', 'ijin', 'sparta' に修正しました）
 const COACHES = [
-  { id: "cheer_leader", name: "チアリーダー", emoji: "📣", accentColor: "bg-pink-500 hover:bg-pink-600" },
-  { id: "tsundere", name: "ツンデレ幼馴染", emoji: "💢", accentColor: "bg-orange-500 hover:bg-orange-600" },
-  { id: "butler", name: "有能な執事", emoji: "☕", accentColor: "bg-slate-700 hover:bg-slate-800" },
-  { id: "hero", name: "スポーツ界の偉人", emoji: "🏆", accentColor: "bg-amber-500 hover:bg-amber-600" },
+  { id: "yuruchara", name: "チアリーダー", emoji: "📣", accentColor: "bg-pink-500 hover:bg-pink-600" },
+  { id: "ofuzake", name: "ツンデレ幼馴染", emoji: "💢", accentColor: "bg-orange-500 hover:bg-orange-600" },
+  { id: "uranai", name: "有能な執事", emoji: "☕", accentColor: "bg-slate-700 hover:bg-slate-800" },
+  { id: "ijin", name: "スポーツ界の偉人", emoji: "🏆", accentColor: "bg-amber-500 hover:bg-amber-600" },
   { id: "sparta", name: "スパルタコーチ", emoji: "🔥", accentColor: "bg-red-600 hover:bg-red-700" },
 ];
 
@@ -27,19 +26,18 @@ export default function Home() {
   const fetchRandomMessage = async (coachType: string) => {
     setIsLoading(true);
     try {
-      // ご指定いただいたテーブル名
       const tableName = "coach_quotes"; 
 
-      // ① まず、対象のコーチ(coach_type)のセリフが何件あるか総数をカウント
+      // ① 指定された coach_type のセリフが何件あるか総数をカウント
       const { count, error: countError } = await supabase
         .from(tableName)
         .select("*", { count: "exact", head: true })
-        .eq("coach_type", coachType); // フィールド名: coach_type
+        .eq("coach_type", coachType);
 
       if (countError) throw countError;
 
       if (count && count > 0) {
-        // ② 総数の中からランダムなインデックス（行位置）を決定
+        // ② 総数の中からランダムなインデックスを決定
         const randomIndex = Math.floor(Math.random() * count);
 
         // ③ そのインデックスの1件だけをピンポイントで取得
@@ -55,7 +53,7 @@ export default function Home() {
         // ④ 取得したセリフを画面にセット（フィールド名: message）
         setMessage(data.message || "セリフの読み込みに失敗しました。"); 
       } else {
-        setMessage("データが見つかりませんでした。Supabaseのテーブルを確認してください。");
+        setMessage(`データが見つかりませんでした。Supabaseに coach_type: "${coachType}" のデータがあるか確認してください。`);
       }
     } catch (error) {
       console.error("Error fetching message:", error);
