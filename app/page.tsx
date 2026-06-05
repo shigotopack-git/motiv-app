@@ -8,12 +8,12 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// コーチ5名の定義（idをご指定のフィールド値 'yuruchara', 'ofuzake', 'uranai', 'ijin', 'sparta' に修正しました）
+// ご指定いただいたコーチ5名の完全定義（名前、ID、並び順を反映）
 const COACHES = [
-  { id: "yuruchara", name: "チアリーダー", emoji: "📣", accentColor: "bg-pink-500 hover:bg-pink-600" },
-  { id: "ofuzake", name: "ツンデレ幼馴染", emoji: "💢", accentColor: "bg-orange-500 hover:bg-orange-600" },
-  { id: "uranai", name: "有能な執事", emoji: "☕", accentColor: "bg-slate-700 hover:bg-slate-800" },
-  { id: "ijin", name: "スポーツ界の偉人", emoji: "🏆", accentColor: "bg-amber-500 hover:bg-amber-600" },
+  { id: "yuruchara", name: "ゆるキャラ", emoji: "📣", accentColor: "bg-pink-500 hover:bg-pink-600" },
+  { id: "ofuzake", name: "おふざけコーチ", emoji: "💢", accentColor: "bg-orange-500 hover:bg-orange-600" },
+  { id: "uranai", name: "筋肉占い師", emoji: "🔮", accentColor: "bg-purple-600 hover:bg-purple-700" },
+  { id: "ijin", name: "スポーツ偉人", emoji: "🏆", accentColor: "bg-amber-500 hover:bg-amber-600" },
   { id: "sparta", name: "スパルタコーチ", emoji: "🔥", accentColor: "bg-red-600 hover:bg-red-700" },
 ];
 
@@ -72,11 +72,13 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4 text-gray-800">
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-6 md:p-10 text-center">
+        {/* メインタイトル */}
         <h1 className="text-2xl md:text-3xl font-extrabold mb-2 tracking-tight text-gray-900">
-          🎾 テニス上達の知恵袋 🎾
+          💪 筋トレ民への応援 💪
         </h1>
-        <p className="text-gray-500 text-sm mb-8">
-          5人の専属コーチが、あなたのモチベーションを意のままにコントロールします。
+        {/* 小見出し */}
+        <p className="text-gray-500 font-bold text-sm mb-8">
+          5人のコーチが貴方の筋トレを全力で応援！！
         </p>
 
         {/* コーチ選択タブ（5名分） */}
