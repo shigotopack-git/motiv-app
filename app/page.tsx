@@ -7,13 +7,13 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// コーチの定義（名前と絵文字）
+// コーチの名称を詳細なものに変更
 const COACHES = [
-  { id: "yuruchara", name: "ゆるキャラ", emoji: "📣" },
-  { id: "ofuzake", name: "おふざけ", emoji: "💢" },
+  { id: "yuruchara", name: "ゆるキャラコーチ", emoji: "📣" },
+  { id: "ofuzake", name: "おふざけコーチ", emoji: "💢" },
   { id: "uranai", name: "筋肉占い師", emoji: "🔮" },
   { id: "ijin", name: "スポーツ偉人", emoji: "🏆" },
-  { id: "sparta", name: "スパルタ", emoji: "🔥" },
+  { id: "sparta", name: "スパルタコーチ", emoji: "🔥" },
 ];
 
 export default function Home() {
@@ -23,7 +23,8 @@ export default function Home() {
   const [isEditing, setIsEditing] = useState(false);
 
   const [selectedCoach, setSelectedCoach] = useState(COACHES[0]);
-  const [message, setMessage] = useState("コーチを選んで、喝を入れてもらいましょう！");
+  // 初期メッセージの変更
+  const [message, setMessage] = useState("ここにメッセージをもらえます");
 
   useEffect(() => {
     const fetchGoal = async () => {
@@ -95,11 +96,12 @@ export default function Home() {
               className={`p-2 rounded-xl border flex flex-col items-center transition ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-gray-50'}`}
             >
               <span className="text-2xl mb-1">{coach.emoji}</span>
-              <span className="text-[10px] font-bold">{coach.name}</span>
+              <span className="text-[10px] font-bold text-center">{coach.name}</span>
             </button>
           ))}
         </div>
 
+        {/* メッセージ表示エリア */}
         <div className="relative bg-gray-50 rounded-2xl p-6 mb-8 text-center min-h-[100px] flex items-center justify-center border border-gray-100">
           <p className="text-lg font-medium text-gray-800">{message}</p>
         </div>
