@@ -20,38 +20,49 @@ export default function Home() {
   const [goalWhy, setGoalWhy] = useState("");
   const [goalWhen, setGoalWhen] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-
   const [selectedCoach, setSelectedCoach] = useState(COACHES[0]);
   const [message, setMessage] = useState("ここにメッセージをもらえます");
+  const [logs, setLogs] = useState<any[]>([]);
 
-  useEffect(() => {
-    const fetchGoal = async () => {
-      const { data } = await supabase.from("profiles").select("*").eq("id", 1).single();
-      if (data) {
-        setGoalWhat(data.goal_what || "");
-        setGoalWhy(data.goal_why || "");
-        setGoalWhen(data.goal_when || "");
-      }
-    };
-    if (supabaseUrl) fetchGoal();
-  }, []);
+  // データ取得系
+  const fetchData = async () => {
+    // 目標取得
+    const { data: profile } = await supabase.from("profiles").select("*").eq("id", 1).single();
+    if (profile) {
+      setGoalWhat(profile.goal_what || "");
+      setGoalWhy(profile.goal_why || "");
+      setGoalWhen(profile.goal_when || "");
+    }
+    // ログ取得（新しい順）
+    const { data: speechLogs } = await supabase.from("speechlogs").select("*").order("created_at", { ascending: false });
+    if (speechLogs) setLogs(speechLogs);
+  };
+
+  useEffect(() => { if (supabaseUrl) fetchData(); }, []);
 
   const saveGoal = async () => {
-    await supabase.from("profiles").upsert({ 
-      id: 1, 
-      goal_what: goalWhat, 
-      goal_why: goalWhy, 
-      goal_when: goalWhen,
-      updated_at: new Date() 
-    });
+    await supabase.from("profiles").upsert({ id: 1, goal_what: goalWhat, goal_why: goalWhy, goal_when: goalWhen, updated_at: new Date() });
     setIsEditing(false);
   };
 
   const fetchRandomMessage = async (coachType: string) => {
     const { data } = await supabase.from("coach_quotes").select("message").eq("coach_type", coachType);
-    if (data && data.length > 0) {
-        setMessage(data[Math.floor(Math.random() * data.length)].message);
+    if (data && data.length > 0) setMessage(data[Math.floor(Math.random() * data.length)].message);
+  };
+
+  // お気に入り追加ロジック
+  const addFavorite = async () => {
+    // 1. 現在の全ログを取得
+    const { data: currentLogs } = await supabase.from("speechlogs").select("id").order("created_at", { ascending: true });
+    
+    // 2. 10個以上なら一番古いものを削除
+    if (currentLogs && currentLogs.length >= 10) {
+      await supabase.from("speechlogs").delete().eq("id", currentLogs[0].id);
     }
+
+    // 3. 新規追加
+    await supabase.from("speechlogs").insert([{ message, coach_type: selectedCoach.name }]);
+    fetchData(); // 再読み込み
   };
 
   const unifiedStyle = "font-sans text-black text-sm";
@@ -66,7 +77,7 @@ export default function Home() {
           {isEditing ? (
             <div className="space-y-2">
               <input value={goalWhat} onChange={(e) => setGoalWhat(e.target.value)} className="w-full p-2 rounded border" placeholder="達成したい目標は？" />
-              <input value={goalWhy} onChange={(e) => setGoalWhy(e.target.value)} className={`w-full p-2 rounded border ${unifiedStyle}`} placeholder="達成する理由は？" />
+              <input value={goalWhy} onChange={(e) => setGoalWhy(e.target.value)} className={`w-full p-2 rounded border ${unifiedStyle}`} />
               <input type="date" value={goalWhen} onChange={(e) => setGoalWhen(e.target.value)} className={`w-full p-2 rounded border ${unifiedStyle}`} />
               <button onClick={saveGoal} className="bg-blue-600 text-white px-4 py-1 rounded w-full">保存する</button>
             </div>
@@ -81,34 +92,36 @@ export default function Home() {
           )}
         </div>
 
-        {/* アドバイスセクション */}
         <h1 className="text-2xl font-extrabold text-center mb-2">💡 コーチからアドバイスをもらう！</h1>
-        <p className="text-gray-500 text-center text-sm mb-6">コーチを選んでボタンを押せば、頑張れるアドバイスをもらえるはずです！</p>
-
-        {/* コーチ選択エリア */}
         <div className="grid grid-cols-5 gap-2 mb-6">
           {COACHES.map((coach) => (
-            <button 
-              key={coach.id} 
-              onClick={() => setSelectedCoach(coach)} 
-              className={`p-2 rounded-xl border flex flex-col items-center transition ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-gray-50'}`}
-            >
-              <span className="text-2xl mb-1">{coach.emoji}</span>
-              <span className="text-[10px] font-bold text-center">{coach.name}</span>
+            <button key={coach.id} onClick={() => setSelectedCoach(coach)} className={`p-2 rounded-xl border ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-gray-50'}`}>
+              <span className="text-xl">{coach.emoji}</span>
+              <p className="text-[9px] font-bold">{coach.name}</p>
             </button>
           ))}
         </div>
 
-        {/* 「お願いする」ボタンをメッセージより上に配置 */}
-        <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-4 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition mb-6">
-          {selectedCoach.name}にお願いする
-        </button>
+        <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-3 bg-black text-white rounded-xl font-bold mb-4">{selectedCoach.name}にお願いする</button>
 
-        {/* メッセージ表示エリアを下に配置 */}
-        <div className="relative bg-gray-50 rounded-2xl p-6 text-center min-h-[100px] flex items-center justify-center border border-gray-100">
-          <p className="text-lg font-medium text-gray-800">{message}</p>
+        <div className="bg-gray-50 rounded-2xl p-6 text-center border border-gray-100 mb-6">
+          <p className="text-lg font-medium text-gray-800 mb-4">{message}</p>
+          <button onClick={addFavorite} className="text-xs bg-blue-600 text-white px-3 py-1 rounded-full">⭐ 心に残った言葉として残す</button>
         </div>
 
+        {/* ログ一覧 */}
+        <div className="mt-8">
+          <h3 className="font-bold mb-4">📜 心に残ったコーチの言葉（最近10件）</h3>
+          <div className="space-y-3">
+            {logs.map((log) => (
+              <div key={log.id} className="p-3 bg-white border rounded-lg text-xs">
+                <p className="text-gray-400">{new Date(log.created_at).toLocaleDateString()}</p>
+                <p className="font-bold text-blue-600">{log.coach_type}</p>
+                <p>{log.message}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </main>
   );
