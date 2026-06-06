@@ -54,8 +54,9 @@ export default function Home() {
     }
   };
 
-  // 共通スタイル用変数
-  const subGoalStyle = "text-sm text-gray-700"; // 同じフォント・色にするためのクラス
+  // 完全に統一されたスタイルクラス
+  // font-sans: ゴシック体, text-black: 黒色, text-sm: サイズ
+  const unifiedStyle = "font-sans text-black text-sm";
 
   return (
     <main className="min-h-screen bg-gray-100 flex flex-col items-center p-4 py-10">
@@ -67,16 +68,16 @@ export default function Home() {
           {isEditing ? (
             <div className="space-y-2">
               <input value={goalWhat} onChange={(e) => setGoalWhat(e.target.value)} className="w-full p-2 rounded border" placeholder="達成したい目標は？" />
-              <input value={goalWhy} onChange={(e) => setGoalWhy(e.target.value)} className={`w-full p-2 rounded border ${subGoalStyle}`} placeholder="達成する理由は？" />
-              <input type="date" value={goalWhen} onChange={(e) => setGoalWhen(e.target.value)} className={`w-full p-2 rounded border ${subGoalStyle}`} />
+              <input value={goalWhy} onChange={(e) => setGoalWhy(e.target.value)} className={`w-full p-2 rounded border ${unifiedStyle}`} placeholder="達成する理由は？" />
+              <input type="date" value={goalWhen} onChange={(e) => setGoalWhen(e.target.value)} className={`w-full p-2 rounded border ${unifiedStyle}`} />
               <button onClick={saveGoal} className="bg-blue-600 text-white px-4 py-1 rounded w-full">保存する</button>
             </div>
           ) : (
             <div onClick={() => setIsEditing(true)} className="cursor-pointer">
               <p className="font-bold text-lg mb-1">{goalWhat || "クリックして目標を入力"}</p>
               <div className="space-y-1">
-                <p className={subGoalStyle}>期限: {goalWhen || "未設定"}</p>
-                <p className={subGoalStyle}>理由: {goalWhy || "未設定"}</p>
+                <p className={unifiedStyle}>期限: {goalWhen || "未設定"}</p>
+                <p className={unifiedStyle}>理由: {goalWhy || "未設定"}</p>
               </div>
             </div>
           )}
@@ -98,3 +99,8 @@ export default function Home() {
 
         <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-4 bg-black text-white rounded-xl font-bold">
           {selectedCoach.name}に話しかける！
+        </button>
+      </div>
+    </main>
+  );
+}
