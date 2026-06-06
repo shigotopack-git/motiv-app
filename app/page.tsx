@@ -7,7 +7,6 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// コーチの名称を詳細なものに変更
 const COACHES = [
   { id: "yuruchara", name: "ゆるキャラコーチ", emoji: "📣" },
   { id: "ofuzake", name: "おふざけコーチ", emoji: "💢" },
@@ -23,7 +22,6 @@ export default function Home() {
   const [isEditing, setIsEditing] = useState(false);
 
   const [selectedCoach, setSelectedCoach] = useState(COACHES[0]);
-  // 初期メッセージの変更
   const [message, setMessage] = useState("ここにメッセージをもらえます");
 
   useEffect(() => {
@@ -88,28 +86,9 @@ export default function Home() {
         <p className="text-gray-500 text-center text-sm mb-6">コーチを選んでボタンを押せば、頑張れるアドバイスをもらえるはずです！</p>
 
         {/* コーチ選択エリア */}
-        <div className="grid grid-cols-5 gap-2 mb-8">
+        <div className="grid grid-cols-5 gap-2 mb-6">
           {COACHES.map((coach) => (
             <button 
               key={coach.id} 
               onClick={() => setSelectedCoach(coach)} 
-              className={`p-2 rounded-xl border flex flex-col items-center transition ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-gray-50'}`}
-            >
-              <span className="text-2xl mb-1">{coach.emoji}</span>
-              <span className="text-[10px] font-bold text-center">{coach.name}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* メッセージ表示エリア */}
-        <div className="relative bg-gray-50 rounded-2xl p-6 mb-8 text-center min-h-[100px] flex items-center justify-center border border-gray-100">
-          <p className="text-lg font-medium text-gray-800">{message}</p>
-        </div>
-
-        <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-4 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition">
-          {selectedCoach.name}にお願いする
-        </button>
-      </div>
-    </main>
-  );
-}
+              className={`p-2 rounded-xl border flex flex-col items-center transition ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg
