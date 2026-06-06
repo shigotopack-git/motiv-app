@@ -10,7 +10,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const COACHES = [
   { id: "yuruchara", name: "ゆるキャラコーチ", emoji: "📣" },
   { id: "ofuzake", name: "おふざけコーチ", emoji: "💢" },
-  { id: "uranai", name: "筋肉占い師", emoji: "🔮" },
+  { id: "uranai", name: "占い師コーチ", emoji: "🔮" },
   { id: "ijin", name: "スポーツ偉人", emoji: "🏆" },
   { id: "sparta", name: "スパルタコーチ", emoji: "🔥" },
 ];
@@ -82,7 +82,7 @@ export default function Home() {
           )}
         </div>
 
-        {/* 2. コーチからのアドバイス（タイトルを枠の外へ） */}
+        {/* 2. コーチからのアドバイス */}
         <h2 className={sectionTitleStyle}>💡 コーチからのアドバイス</h2>
         <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
           <p className="text-gray-500 text-xs mb-4">コーチを選び、下部のボタンでアドバイスボタンを押してください</p>
@@ -110,7 +110,7 @@ export default function Home() {
 
         {/* 3. 最近のログ */}
         <h2 className={sectionTitleStyle}>📜 心に残ったコーチの言葉（最近10件）</h2>
-        <div className="space-y-3">
+        <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 space-y-3">
           {logs.map((log) => (
             <div key={log.id} className="p-3 bg-white border border-gray-200 rounded-lg text-sm">
               <p className="text-gray-500 text-xs">{new Date(log.created_at).toLocaleDateString()}</p>
