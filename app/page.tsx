@@ -56,9 +56,9 @@ export default function Home() {
     fetchData();
   };
 
-  // 統一タイトル用スタイル（左寄せ・ゴシック・黒・太字）
+  // 文字色をすべて「text-black」に変更し、太さを強化
   const sectionTitleStyle = "text-xl font-bold text-black mb-4 text-left";
-  const unifiedStyle = "font-sans text-black text-sm";
+  const contentTextStyle = "font-sans text-black font-medium text-sm";
 
   return (
     <main className="min-h-screen bg-gray-100 flex flex-col items-center p-4 py-10">
@@ -69,16 +69,16 @@ export default function Home() {
         <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
           {isEditing ? (
             <div className="space-y-2">
-              <input value={goalWhat} onChange={(e) => setGoalWhat(e.target.value)} className="w-full p-2 rounded border" placeholder="目標を入力" />
-              <input value={goalWhy} onChange={(e) => setGoalWhy(e.target.value)} className={`w-full p-2 rounded border ${unifiedStyle}`} placeholder="理由を入力" />
-              <input type="date" value={goalWhen} onChange={(e) => setGoalWhen(e.target.value)} className={`w-full p-2 rounded border ${unifiedStyle}`} />
-              <button onClick={saveGoal} className="bg-blue-600 text-white px-4 py-1 rounded w-full">保存する</button>
+              <input value={goalWhat} onChange={(e) => setGoalWhat(e.target.value)} className="w-full p-2 rounded border text-black font-bold" placeholder="目標を入力" />
+              <input value={goalWhy} onChange={(e) => setGoalWhy(e.target.value)} className={`w-full p-2 rounded border ${contentTextStyle}`} placeholder="理由を入力" />
+              <input type="date" value={goalWhen} onChange={(e) => setGoalWhen(e.target.value)} className={`w-full p-2 rounded border ${contentTextStyle}`} />
+              <button onClick={saveGoal} className="bg-blue-600 text-white px-4 py-1 rounded w-full font-bold">保存する</button>
             </div>
           ) : (
             <div onClick={() => setIsEditing(true)} className="cursor-pointer">
-              <p className="font-bold text-lg mb-1">{goalWhat || "クリックして目標を入力"}</p>
-              <p className={unifiedStyle}>期限: {goalWhen || "未設定"}</p>
-              <p className={unifiedStyle}>理由: {goalWhy || "未設定"}</p>
+              <p className="font-bold text-lg mb-1 text-black">{goalWhat || "クリックして目標を入力"}</p>
+              <p className={contentTextStyle}>期限: {goalWhen || "未設定"}</p>
+              <p className={contentTextStyle}>理由: {goalWhy || "未設定"}</p>
             </div>
           )}
         </div>
@@ -89,7 +89,7 @@ export default function Home() {
           {COACHES.map((coach) => (
             <button key={coach.id} onClick={() => setSelectedCoach(coach)} className={`p-2 rounded-xl border ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-gray-50'}`}>
               <span className="text-xl">{coach.emoji}</span>
-              <p className="text-[9px] font-bold">{coach.name}</p>
+              <p className="text-[10px] font-bold text-black mt-1">{coach.name}</p>
             </button>
           ))}
         </div>
@@ -99,10 +99,9 @@ export default function Home() {
         </button>
 
         <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
-          {/* メッセージ左寄せ・ボタン右寄せ */}
-          <p className="text-md font-medium text-gray-800 mb-4 text-left">{message}</p>
+          <p className="text-md font-bold text-black mb-4 text-left">{message}</p>
           <div className="flex justify-end">
-            <button onClick={addFavorite} className="text-xs bg-blue-600 text-white px-3 py-1 rounded-full">⭐ 心に残った言葉として残す</button>
+            <button onClick={addFavorite} className="text-xs bg-blue-600 text-white px-3 py-1 rounded-full font-bold">⭐ 心に残った言葉として残す</button>
           </div>
         </div>
 
@@ -110,10 +109,10 @@ export default function Home() {
         <h2 className={sectionTitleStyle}>📜 心に残ったコーチの言葉（最近10件）</h2>
         <div className="space-y-3">
           {logs.map((log) => (
-            <div key={log.id} className="p-3 bg-white border rounded-lg text-sm">
-              <p className="text-gray-400 text-xs">{new Date(log.created_at).toLocaleDateString()}</p>
-              <p className="font-bold text-blue-600">{log.coach_type}</p>
-              <p className="text-black">{log.message}</p>
+            <div key={log.id} className="p-3 bg-white border border-gray-200 rounded-lg text-sm">
+              <p className="text-gray-500 text-xs">{new Date(log.created_at).toLocaleDateString()}</p>
+              <p className="font-bold text-black">{log.coach_type}</p>
+              <p className="text-black font-medium">{log.message}</p>
             </div>
           ))}
         </div>
