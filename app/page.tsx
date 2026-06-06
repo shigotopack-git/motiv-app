@@ -7,12 +7,13 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// コーチの定義（名前と絵文字）
 const COACHES = [
   { id: "yuruchara", name: "ゆるキャラ", emoji: "📣" },
-  { id: "ofuzake", name: "おふざけコーチ", emoji: "💢" },
+  { id: "ofuzake", name: "おふざけ", emoji: "💢" },
   { id: "uranai", name: "筋肉占い師", emoji: "🔮" },
   { id: "ijin", name: "スポーツ偉人", emoji: "🏆" },
-  { id: "sparta", name: "スパルタコーチ", emoji: "🔥" },
+  { id: "sparta", name: "スパルタ", emoji: "🔥" },
 ];
 
 export default function Home() {
@@ -54,8 +55,6 @@ export default function Home() {
     }
   };
 
-  // 完全に統一されたスタイルクラス
-  // font-sans: ゴシック体, text-black: 黒色, text-sm: サイズ
   const unifiedStyle = "font-sans text-black text-sm";
 
   return (
@@ -83,22 +82,30 @@ export default function Home() {
           )}
         </div>
 
-        <h1 className="text-2xl font-extrabold text-center mb-2">💪 筋トレ民への応援 💪</h1>
+        {/* アドバイスセクション */}
+        <h1 className="text-2xl font-extrabold text-center mb-2">💡 コーチからアドバイスをもらう！</h1>
+        <p className="text-gray-500 text-center text-sm mb-6">コーチを選んでボタンを押せば、頑張れるアドバイスをもらえるはずです！</p>
 
+        {/* コーチ選択エリア */}
         <div className="grid grid-cols-5 gap-2 mb-8">
           {COACHES.map((coach) => (
-            <button key={coach.id} onClick={() => setSelectedCoach(coach)} className={`p-2 rounded-xl border ${selectedCoach.id === coach.id ? 'bg-blue-100' : 'bg-gray-50'}`}>
-              {coach.emoji}
+            <button 
+              key={coach.id} 
+              onClick={() => setSelectedCoach(coach)} 
+              className={`p-2 rounded-xl border flex flex-col items-center transition ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-gray-50'}`}
+            >
+              <span className="text-2xl mb-1">{coach.emoji}</span>
+              <span className="text-[10px] font-bold">{coach.name}</span>
             </button>
           ))}
         </div>
 
-        <div className="relative bg-gray-50 rounded-2xl p-6 mb-8 text-center min-h-[100px] flex items-center justify-center">
+        <div className="relative bg-gray-50 rounded-2xl p-6 mb-8 text-center min-h-[100px] flex items-center justify-center border border-gray-100">
           <p className="text-lg font-medium text-gray-800">{message}</p>
         </div>
 
-        <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-4 bg-black text-white rounded-xl font-bold">
-          {selectedCoach.name}に話しかける！
+        <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-4 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition">
+          {selectedCoach.name}にお願いする
         </button>
       </div>
     </main>
