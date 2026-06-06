@@ -82,10 +82,10 @@ export default function Home() {
           )}
         </div>
 
-        {/* 水色背景エリア開始 */}
+        {/* 水色背景エリア開始：タイトルを含める */}
         <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
           <h2 className={sectionTitleStyle}>💡 コーチからのアドバイス</h2>
-          <p className="text-gray-500 text-xs mb-4">コーチを選んで下のボタンを押してください</p>
+          <p className="text-gray-500 text-xs mb-4">コーチを選び、下部のボタンでアドバイスボタンを押してください</p>
           
           <div className="grid grid-cols-5 gap-2 mb-6">
             {COACHES.map((coach) => (
@@ -97,7 +97,7 @@ export default function Home() {
           </div>
 
           <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-3 bg-black text-white rounded-xl font-bold mb-4">
-            アドバイスお願いします！
+            アドバイスボタン
           </button>
 
           <div className="bg-white rounded-xl p-4 border border-blue-100">
