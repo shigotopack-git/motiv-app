@@ -85,7 +85,7 @@ export default function Home() {
         {/* 2. コーチからのアドバイス */}
         <h2 className={sectionTitleStyle}>💡 コーチからのアドバイス</h2>
         <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
-          <p className="text-gray-500 text-xs mb-4">コーチを選び、下部のボタンでアドバイスボタンを押してください</p>
+          <p className="text-gray-500 text-xs mb-4">コーチを選び、下部のアドバイスボタンを押してください</p>
           
           <div className="grid grid-cols-5 gap-2 mb-6">
             {COACHES.map((coach) => (
