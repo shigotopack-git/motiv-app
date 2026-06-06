@@ -60,7 +60,7 @@ export default function Home() {
         
         {/* 目標表示エリア */}
         <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
-          <h2 className="font-bold text-blue-800 mb-2">🎯 今日の目標</h2>
+          <h2 className="font-bold text-blue-800 mb-2">🎯直近の目標</h2>
           {isEditing ? (
             <div className="space-y-2">
               <input value={goalWhat} onChange={(e) => setGoalWhat(e.target.value)} className="w-full p-2 rounded border" placeholder="目標は何？" />
