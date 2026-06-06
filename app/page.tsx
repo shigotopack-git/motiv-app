@@ -82,29 +82,32 @@ export default function Home() {
           )}
         </div>
 
-        {/* コーチからのアドバイス */}
-        <h2 className={sectionTitleStyle}>💡 コーチからのアドバイス</h2>
-        <p className="text-gray-500 text-xs mb-4">コーチを選んで下のボタンを押してください</p>
-        
-        <div className="grid grid-cols-5 gap-2 mb-6">
-          {COACHES.map((coach) => (
-            <button key={coach.id} onClick={() => setSelectedCoach(coach)} className={`p-2 rounded-xl border ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-gray-50'}`}>
-              <span className="text-xl">{coach.emoji}</span>
-              <p className="text-[10px] font-bold text-black mt-1">{coach.name}</p>
-            </button>
-          ))}
-        </div>
+        {/* 水色背景エリア開始 */}
+        <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
+          <h2 className={sectionTitleStyle}>💡 コーチからのアドバイス</h2>
+          <p className="text-gray-500 text-xs mb-4">コーチを選んで下のボタンを押してください</p>
+          
+          <div className="grid grid-cols-5 gap-2 mb-6">
+            {COACHES.map((coach) => (
+              <button key={coach.id} onClick={() => setSelectedCoach(coach)} className={`p-2 rounded-xl border ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-white'}`}>
+                <span className="text-xl">{coach.emoji}</span>
+                <p className="text-[10px] font-bold text-black mt-1">{coach.name}</p>
+              </button>
+            ))}
+          </div>
 
-        <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-3 bg-black text-white rounded-xl font-bold mb-4">
-          アドバイスお願いします！
-        </button>
+          <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-3 bg-black text-white rounded-xl font-bold mb-4">
+            アドバイスお願いします！
+          </button>
 
-        <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
-          <p className="text-md font-bold text-black mb-4 text-left">{message}</p>
-          <div className="flex justify-end">
-            <button onClick={addFavorite} className="text-xs bg-blue-600 text-white px-3 py-1 rounded-full font-bold">⭐ 心に残った言葉として残す</button>
+          <div className="bg-white rounded-xl p-4 border border-blue-100">
+            <p className="text-md font-bold text-black mb-4 text-left">{message}</p>
+            <div className="flex justify-end">
+              <button onClick={addFavorite} className="text-xs bg-blue-600 text-white px-3 py-1 rounded-full font-bold">⭐ 心に残った言葉として残す</button>
+            </div>
           </div>
         </div>
+        {/* 水色背景エリア終了 */}
 
         {/* 最近のログ */}
         <h2 className={sectionTitleStyle}>📜 心に残ったコーチの言葉（最近10件）</h2>
