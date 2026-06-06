@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-// 1. Supabaseクライアントの初期化
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// ご指定いただいたコーチ5名の完全定義（名前、ID、並び順を反映）
 const COACHES = [
   { id: "yuruchara", name: "ゆるキャラ", emoji: "📣", accentColor: "bg-pink-500 hover:bg-pink-600" },
   { id: "ofuzake", name: "おふざけコーチ", emoji: "💢", accentColor: "bg-orange-500 hover:bg-orange-600" },
@@ -18,103 +16,80 @@ const COACHES = [
 ];
 
 export default function Home() {
+  // 目標用ステート
+  const [goalWhat, setGoalWhat] = useState("ここに目標を入力...");
+  const [goalWhy, setGoalWhy] = useState("なぜその目標を達成したいか...");
+  const [isEditing, setIsEditing] = useState(false);
+
   const [selectedCoach, setSelectedCoach] = useState(COACHES[0]);
-  const [message, setMessage] = useState("上のボタンからコーチを選んで、喝を入れてもらいましょう！");
+  const [message, setMessage] = useState("コーチを選んで、喝を入れてもらいましょう！");
   const [isLoading, setIsLoading] = useState(false);
 
-  // 指定されたコーチのセリフをSupabaseからランダムに1件取得する関数
-  const fetchRandomMessage = async (coachType: string) => {
-    setIsLoading(true);
-    try {
-      const tableName = "coach_quotes"; 
-
-      // ① 指定された coach_type のセリフが何件あるか総数をカウント
-      const { count, error: countError } = await supabase
-        .from(tableName)
-        .select("*", { count: "exact", head: true })
-        .eq("coach_type", coachType);
-
-      if (countError) throw countError;
-
-      if (count && count > 0) {
-        // ② 総数の中からランダムなインデックスを決定
-        const randomIndex = Math.floor(Math.random() * count);
-
-        // ③ そのインデックスの1件だけをピンポイントで取得
-        const { data, error: dataError } = await supabase
-          .from(tableName)
-          .select("*")
-          .eq("coach_type", coachType)
-          .range(randomIndex, randomIndex)
-          .single();
-
-        if (dataError) throw dataError;
-
-        // ④ 取得したセリフを画面にセット（フィールド名: message）
-        setMessage(data.message || "セリフの読み込みに失敗しました。"); 
-      } else {
-        setMessage(`データが見つかりませんでした。Supabaseに coach_type: "${coachType}" のデータがあるか確認してください。`);
+  // 初回ロード時にDBから目標を取得（id=1の固定ユーザーと仮定）
+  useEffect(() => {
+    const fetchGoal = async () => {
+      const { data } = await supabase.from("profiles").select("*").eq("id", 1).single();
+      if (data) {
+        setGoalWhat(data.goal_what || "");
+        setGoalWhy(data.goal_why || "");
       }
-    } catch (error) {
-      console.error("Error fetching message:", error);
-      setMessage("エラーが発生しました。RLS設定や環境変数を確認してください。");
-    } finally {
-      setIsLoading(false);
-    }
+    };
+    if (supabaseUrl) fetchGoal();
+  }, []);
+
+  // 目標保存処理
+  const saveGoal = async () => {
+    await supabase.from("profiles").upsert({ id: 1, goal_what: goalWhat, goal_why: goalWhy, updated_at: new Date() });
+    setIsEditing(false);
   };
 
-  // コーチ変更時の処理
-  const handleCoachChange = (coach: typeof COACHES[0]) => {
-    setSelectedCoach(coach);
-    setMessage(`${coach.name}がスタンバイしました。下のボタンを押してください！`);
+  const fetchRandomMessage = async (coachType: string) => {
+    setIsLoading(true);
+    const { data } = await supabase.from("coach_quotes").select("message").eq("coach_type", coachType);
+    if (data && data.length > 0) {
+        const randomMsg = data[Math.floor(Math.random() * data.length)].message;
+        setMessage(randomMsg);
+    }
+    setIsLoading(false);
   };
 
   return (
-    <main className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4 text-gray-800">
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-6 md:p-10 text-center">
-        {/* メインタイトル */}
-        <h1 className="text-2xl md:text-3xl font-extrabold mb-2 tracking-tight text-gray-900">
-          💪 筋トレ民への応援 💪
-        </h1>
-        {/* 小見出し */}
-        <p className="text-gray-500 font-bold text-sm mb-8">
-          5人のコーチが貴方の筋トレを全力で応援！！
-        </p>
+    <main className="min-h-screen bg-gray-100 flex flex-col items-center p-4 py-10">
+      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-6">
+        
+        {/* 目標表示エリア */}
+        <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
+          <h2 className="font-bold text-blue-800 mb-2">🎯 今日の目標</h2>
+          {isEditing ? (
+            <div className="space-y-2">
+              <input value={goalWhat} onChange={(e) => setGoalWhat(e.target.value)} className="w-full p-2 rounded" placeholder="目標は何？" />
+              <input value={goalWhy} onChange={(e) => setGoalWhy(e.target.value)} className="w-full p-2 rounded" placeholder="なぜ達成するの？" />
+              <button onClick={saveGoal} className="bg-blue-600 text-white px-4 py-1 rounded">保存</button>
+            </div>
+          ) : (
+            <div onClick={() => setIsEditing(true)} className="cursor-pointer">
+              <p className="font-bold text-lg">{goalWhat}</p>
+              <p className="text-sm text-gray-600 italic">理由: {goalWhy}</p>
+            </div>
+          )}
+        </div>
 
-        {/* コーチ選択タブ（5名分） */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-8">
+        <h1 className="text-2xl font-extrabold text-center mb-2">💪 筋トレ民への応援 💪</h1>
+        <p className="text-gray-500 font-bold text-center text-sm mb-8">5人のコーチが貴方を全力で応援！！</p>
+
+        {/* 以下、前回のボタン配置と同じ */}
+        <div className="grid grid-cols-5 gap-2 mb-8">
           {COACHES.map((coach) => (
-            <button
-              key={coach.id}
-              onClick={() => handleCoachChange(coach)}
-              className={`p-3 rounded-xl border flex flex-col items-center justify-center transition-all ${
-                selectedCoach.id === coach.id
-                  ? "border-gray-900 bg-gray-900 text-white shadow-md transform scale-105"
-                  : "border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              <span className="text-2xl mb-1">{coach.emoji}</span>
-              <span className="text-xs font-bold leading-tight">{coach.name}</span>
-            </button>
+            <button key={coach.id} onClick={() => setSelectedCoach(coach)} className="p-2 rounded-xl bg-gray-50 border">{coach.emoji}</button>
           ))}
         </div>
 
-        {/* セリフ表示エリア（吹き出し風） */}
-        <div className="relative bg-gray-50 rounded-2xl p-6 md:p-8 min-h-[140px] flex items-center justify-center border border-gray-100 mb-8 shadow-inner">
-          <p className={`text-base md:text-lg font-medium leading-relaxed ${isLoading ? "animate-pulse text-gray-400" : "text-gray-800"}`}>
-            {message}
-          </p>
+        <div className="relative bg-gray-50 rounded-2xl p-6 mb-8 text-center">
+          <p>{message}</p>
         </div>
 
-        {/* アクションボタン */}
-        <button
-          onClick={() => fetchRandomMessage(selectedCoach.id)}
-          disabled={isLoading}
-          className={`w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg transition-all transform active:scale-95 ${
-            selectedCoach.accentColor
-          } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
-        >
-          {isLoading ? "声をかけています..." : `${selectedCoach.name}に話しかける！`}
+        <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-4 bg-black text-white rounded-xl">
+          {selectedCoach.name}に話しかける！
         </button>
       </div>
     </main>
