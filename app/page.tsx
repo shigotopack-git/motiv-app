@@ -18,7 +18,7 @@ const COACHES = [
 export default function Home() {
   const [goalWhat, setGoalWhat] = useState("");
   const [goalWhy, setGoalWhy] = useState("");
-  const [goalWhen, setGoalWhen] = useState(""); // 日付用ステート
+  const [goalWhen, setGoalWhen] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
   const [selectedCoach, setSelectedCoach] = useState(COACHES[0]);
@@ -30,7 +30,7 @@ export default function Home() {
       if (data) {
         setGoalWhat(data.goal_what || "");
         setGoalWhy(data.goal_why || "");
-        setGoalWhen(data.goal_when || ""); // 日付の読み込み
+        setGoalWhen(data.goal_when || "");
       }
     };
     if (supabaseUrl) fetchGoal();
@@ -41,7 +41,7 @@ export default function Home() {
       id: 1, 
       goal_what: goalWhat, 
       goal_why: goalWhy, 
-      goal_when: goalWhen, // 日付の保存
+      goal_when: goalWhen,
       updated_at: new Date() 
     });
     setIsEditing(false);
@@ -54,25 +54,30 @@ export default function Home() {
     }
   };
 
+  // 共通スタイル用変数
+  const subGoalStyle = "text-sm text-gray-700"; // 同じフォント・色にするためのクラス
+
   return (
     <main className="min-h-screen bg-gray-100 flex flex-col items-center p-4 py-10">
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-6">
         
         {/* 目標表示エリア */}
         <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
-          <h2 className="font-bold text-blue-800 mb-2">🎯直近の目標</h2>
+          <h2 className="font-bold text-blue-800 mb-2">🎯 直近の目標</h2>
           {isEditing ? (
             <div className="space-y-2">
-              <input value={goalWhat} onChange={(e) => setGoalWhat(e.target.value)} className="w-full p-2 rounded border" placeholder="目標は何？" />
-              <input value={goalWhy} onChange={(e) => setGoalWhy(e.target.value)} className="w-full p-2 rounded border" placeholder="なぜ達成するの？" />
-              <input type="date" value={goalWhen} onChange={(e) => setGoalWhen(e.target.value)} className="w-full p-2 rounded border" />
+              <input value={goalWhat} onChange={(e) => setGoalWhat(e.target.value)} className="w-full p-2 rounded border" placeholder="達成したい目標は？" />
+              <input value={goalWhy} onChange={(e) => setGoalWhy(e.target.value)} className={`w-full p-2 rounded border ${subGoalStyle}`} placeholder="達成する理由は？" />
+              <input type="date" value={goalWhen} onChange={(e) => setGoalWhen(e.target.value)} className={`w-full p-2 rounded border ${subGoalStyle}`} />
               <button onClick={saveGoal} className="bg-blue-600 text-white px-4 py-1 rounded w-full">保存する</button>
             </div>
           ) : (
             <div onClick={() => setIsEditing(true)} className="cursor-pointer">
-              <p className="font-bold text-lg">{goalWhat || "クリックして目標を入力"}</p>
-              <p className="text-sm text-gray-600">期限: {goalWhen || "未設定"}</p>
-              <p className="text-xs text-gray-400 italic mt-1">理由: {goalWhy}</p>
+              <p className="font-bold text-lg mb-1">{goalWhat || "クリックして目標を入力"}</p>
+              <div className="space-y-1">
+                <p className={subGoalStyle}>期限: {goalWhen || "未設定"}</p>
+                <p className={subGoalStyle}>理由: {goalWhy || "未設定"}</p>
+              </div>
             </div>
           )}
         </div>
@@ -93,8 +98,3 @@ export default function Home() {
 
         <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-4 bg-black text-white rounded-xl font-bold">
           {selectedCoach.name}に話しかける！
-        </button>
-      </div>
-    </main>
-  );
-}
