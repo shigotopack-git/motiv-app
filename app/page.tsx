@@ -63,7 +63,7 @@ export default function Home() {
     <main className="min-h-screen bg-gray-100 flex flex-col items-center p-4 py-10">
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-6">
         
-        {/* 直近の目標 */}
+        {/* 1. 直近の目標 */}
         <h2 className={sectionTitleStyle}>🎯 直近の目標</h2>
         <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
           {isEditing ? (
@@ -82,9 +82,9 @@ export default function Home() {
           )}
         </div>
 
-        {/* 水色背景エリア開始：タイトルを含める */}
+        {/* 2. コーチからのアドバイス（タイトルを枠の外へ） */}
+        <h2 className={sectionTitleStyle}>💡 コーチからのアドバイス</h2>
         <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
-          <h2 className={sectionTitleStyle}>💡 コーチからのアドバイス</h2>
           <p className="text-gray-500 text-xs mb-4">コーチを選び、下部のボタンでアドバイスボタンを押してください</p>
           
           <div className="grid grid-cols-5 gap-2 mb-6">
@@ -107,9 +107,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-        {/* 水色背景エリア終了 */}
 
-        {/* 最近のログ */}
+        {/* 3. 最近のログ */}
         <h2 className={sectionTitleStyle}>📜 心に残ったコーチの言葉（最近10件）</h2>
         <div className="space-y-3">
           {logs.map((log) => (
