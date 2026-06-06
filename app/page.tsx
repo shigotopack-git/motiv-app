@@ -56,7 +56,6 @@ export default function Home() {
     fetchData();
   };
 
-  // 文字色をすべて「text-black」に変更し、太さを強化
   const sectionTitleStyle = "text-xl font-bold text-black mb-4 text-left";
   const contentTextStyle = "font-sans text-black font-medium text-sm";
 
@@ -83,8 +82,10 @@ export default function Home() {
           )}
         </div>
 
-        {/* コーチからアドバイス */}
-        <h2 className={sectionTitleStyle}>💡 コーチからアドバイスをもらう！</h2>
+        {/* コーチからのアドバイス */}
+        <h2 className={sectionTitleStyle}>💡 コーチからのアドバイス</h2>
+        <p className="text-gray-500 text-xs mb-4">コーチを選んで下のボタンを押してください</p>
+        
         <div className="grid grid-cols-5 gap-2 mb-6">
           {COACHES.map((coach) => (
             <button key={coach.id} onClick={() => setSelectedCoach(coach)} className={`p-2 rounded-xl border ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-gray-50'}`}>
@@ -95,7 +96,7 @@ export default function Home() {
         </div>
 
         <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-3 bg-black text-white rounded-xl font-bold mb-4">
-          {selectedCoach.name}にお願いする
+          アドバイスお願いします！
         </button>
 
         <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
