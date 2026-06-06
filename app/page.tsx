@@ -91,4 +91,25 @@ export default function Home() {
             <button 
               key={coach.id} 
               onClick={() => setSelectedCoach(coach)} 
-              className={`p-2 rounded-xl border flex flex-col items-center transition ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg
+              className={`p-2 rounded-xl border flex flex-col items-center transition ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-gray-50'}`}
+            >
+              <span className="text-2xl mb-1">{coach.emoji}</span>
+              <span className="text-[10px] font-bold text-center">{coach.name}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* 「お願いする」ボタンをメッセージより上に配置 */}
+        <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-4 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition mb-6">
+          {selectedCoach.name}にお願いする
+        </button>
+
+        {/* メッセージ表示エリアを下に配置 */}
+        <div className="relative bg-gray-50 rounded-2xl p-6 text-center min-h-[100px] flex items-center justify-center border border-gray-100">
+          <p className="text-lg font-medium text-gray-800">{message}</p>
+        </div>
+
+      </div>
+    </main>
+  );
+}
