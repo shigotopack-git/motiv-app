@@ -170,4 +170,15 @@ export default function Home() {
           <div className="mt-4 space-y-2">
             {journals.map((j) => (
               <div key={j.id} className="p-3 bg-white rounded-lg border border-blue-100 text-xs">
-                <p className="font-bold text-blue-600 mb
+                <p className="font-bold text-blue-600 mb-1">{j.log_date} | {j.location || "場所未設定"}</p>
+                <p className="text-black mb-1"><strong>気づき:</strong> {j.insight || "入力なし"}</p>
+                <p className="text-gray-600 italic"><strong>アドバイス:</strong> {j.self_advice || "入力なし"}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </main>
+  );
+}
