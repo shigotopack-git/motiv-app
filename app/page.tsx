@@ -23,6 +23,10 @@ export default function Home() {
   const [selectedCoach, setSelectedCoach] = useState(COACHES[0]);
   const [message, setMessage] = useState("ここにメッセージをもらえます");
   const [logs, setLogs] = useState<any[]>([]);
+  
+  // 日誌用State
+  const [journals, setJournals] = useState<any[]>([]);
+  const [newJournal, setNewJournal] = useState({ date: new Date().toISOString().split('T')[0], location: "", insight: "", selfAdvice: "" });
 
   const fetchData = async () => {
     const { data: profile } = await supabase.from("profiles").select("*").eq("id", 1).single();
@@ -33,6 +37,9 @@ export default function Home() {
     }
     const { data: speechLogs } = await supabase.from("speechlogs").select("*").order("created_at", { ascending: false });
     if (speechLogs) setLogs(speechLogs);
+
+    const { data: journalData } = await supabase.from("training_journal").select("*").order("log_date", { ascending: false });
+    if (journalData) setJournals(journalData);
   };
 
   useEffect(() => { if (supabaseUrl) fetchData(); }, []);
@@ -48,11 +55,18 @@ export default function Home() {
   };
 
   const addFavorite = async () => {
-    const { data: currentLogs } = await supabase.from("speechlogs").select("id").order("created_at", { ascending: true });
-    if (currentLogs && currentLogs.length >= 10) {
-      await supabase.from("speechlogs").delete().eq("id", currentLogs[0].id);
-    }
     await supabase.from("speechlogs").insert([{ message, coach_type: selectedCoach.name }]);
+    fetchData();
+  };
+
+  const saveJournal = async () => {
+    await supabase.from("training_journal").insert([{ 
+      log_date: newJournal.date, 
+      location: newJournal.location, 
+      insight: newJournal.insight, 
+      self_advice: newJournal.selfAdvice 
+    }]);
+    setNewJournal({ date: new Date().toISOString().split('T')[0], location: "", insight: "", selfAdvice: "" });
     fetchData();
   };
 
@@ -86,7 +100,6 @@ export default function Home() {
         <h2 className={sectionTitleStyle}>💡 コーチからのアドバイス</h2>
         <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
           <p className="text-gray-500 text-xs mb-4">コーチを選び、下部のアドバイスボタンを押してください</p>
-          
           <div className="grid grid-cols-5 gap-2 mb-6">
             {COACHES.map((coach) => (
               <button key={coach.id} onClick={() => setSelectedCoach(coach)} className={`p-2 rounded-xl border ${selectedCoach.id === coach.id ? 'bg-blue-100 border-blue-400' : 'bg-white'}`}>
@@ -95,11 +108,7 @@ export default function Home() {
               </button>
             ))}
           </div>
-
-          <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-3 bg-black text-white rounded-xl font-bold mb-4">
-            アドバイスボタン
-          </button>
-
+          <button onClick={() => fetchRandomMessage(selectedCoach.id)} className="w-full py-3 bg-black text-white rounded-xl font-bold mb-4">アドバイスボタン</button>
           <div className="bg-white rounded-xl p-4 border border-blue-100">
             <p className="text-md font-bold text-black mb-4 text-left">{message}</p>
             <div className="flex justify-end">
@@ -110,7 +119,7 @@ export default function Home() {
 
         {/* 3. 最近のログ */}
         <h2 className={sectionTitleStyle}>📜 心に残ったコーチの言葉（最近10件）</h2>
-        <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 space-y-3">
+        <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100 space-y-3">
           {logs.map((log) => (
             <div key={log.id} className="p-3 bg-white border border-gray-200 rounded-lg text-sm">
               <p className="text-gray-500 text-xs">{new Date(log.created_at).toLocaleDateString()}</p>
@@ -118,6 +127,28 @@ export default function Home() {
               <p className="text-black font-medium">{log.message}</p>
             </div>
           ))}
+        </div>
+
+        {/* 4. トレーニング日誌 */}
+        <h2 className={sectionTitleStyle}>✍️ トレーニング日誌</h2>
+        <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <input type="date" value={newJournal.date} onChange={(e) => setNewJournal({...newJournal, date: e.target.value})} className="p-2 rounded border text-sm text-black" />
+            <input type="text" placeholder="場所" value={newJournal.location} onChange={(e) => setNewJournal({...newJournal, location: e.target.value})} className="p-2 rounded border text-sm text-black" />
+          </div>
+          <textarea placeholder="今日の気づき" value={newJournal.insight} onChange={(e) => setNewJournal({...newJournal, insight: e.target.value})} className="w-full p-2 rounded border text-sm text-black h-20" />
+          <textarea placeholder="自分へのアドバイス" value={newJournal.selfAdvice} onChange={(e) => setNewJournal({...newJournal, selfAdvice: e.target.value})} className="w-full p-2 rounded border text-sm text-black h-20" />
+          <button onClick={saveJournal} className="w-full py-2 bg-blue-600 text-white rounded-xl font-bold">日誌を保存</button>
+          
+          <div className="mt-4 space-y-2">
+            {journals.slice(0, 3).map((j) => (
+              <div key={j.id} className="p-3 bg-white rounded-lg border border-blue-100 text-xs">
+                <p className="font-bold text-blue-600">{j.log_date} | {j.location}</p>
+                <p className="text-black">気づき: {j.insight}</p>
+                <p className="text-gray-600 italic">アドバイス: {j.self_advice}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </main>
